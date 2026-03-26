@@ -1,0 +1,312 @@
+<div class="page-wrapper">
+
+  <!-- Animated background blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🔍</span>
+        <span class="logo-text">FraudGuard <span class="logo-ai">AI</span></span>
+      </div>
+      <div class="header-badge">Real-Time Detection</div>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="main">
+    <div class="page-title">
+      <h1>Transaction Risk Analyser</h1>
+      <p class="subtitle">Fill in the transaction details below and let the model evaluate fraud probability.</p>
+    </div>
+
+    <div class="form-grid">
+
+      <!-- LEFT COLUMN -->
+      <div class="form-column">
+
+        <!-- Transaction Hour -->
+        <div class="card slide-in">
+          <div class="card-header">
+            <span class="card-icon">🕐</span>
+            <h2>Transaction Hour</h2>
+          </div>
+          <div class="slider-wrapper">
+            <input type="range" min="0" max="23" step="1"
+                   [(ngModel)]="transaction_hour" class="styled-slider" id="hourSlider" />
+            <div class="slider-labels">
+              <span>0h</span>
+              <div class="slider-value-pill">{{ transaction_hour }}:00</div>
+              <span>23h</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Log Amount -->
+        <div class="card slide-in" style="animation-delay:0.05s">
+          <div class="card-header">
+            <span class="card-icon">💵</span>
+            <h2>Log Amount</h2>
+          </div>
+          <div class="slider-wrapper">
+            <input type="range" min="0" max="10" step="0.001"
+                   [(ngModel)]="log_amount" class="styled-slider" id="amountSlider"/>
+            <div class="slider-labels">
+              <span>0</span>
+              <div class="slider-value-pill">{{ log_amount | number:'1.4-4' }}</div>
+              <span>10</span>
+            </div>
+            <div class="manual-input-row">
+              <label>Exact value:</label>
+              <input type="number" step="0.000001" [(ngModel)]="log_amount"
+                     class="number-input" id="amountInput" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Merchant Category -->
+        <div class="card slide-in" style="animation-delay:0.10s">
+          <div class="card-header">
+            <span class="card-icon">🏪</span>
+            <h2>Merchant Category</h2>
+          </div>
+          <div class="chip-group" id="merchantGroup">
+            <label *ngFor="let cat of merchant_categories"
+                   class="chip"
+                   [class.chip-active]="merchant_category === cat">
+              <input type="radio" [(ngModel)]="merchant_category" [value]="cat" name="merchant" />
+              {{ cat }}
+            </label>
+          </div>
+        </div>
+
+        <!-- Amount Category -->
+        <div class="card slide-in" style="animation-delay:0.15s">
+          <div class="card-header">
+            <span class="card-icon">📊</span>
+            <h2>Amount Category</h2>
+          </div>
+          <div class="chip-group" id="amountCatGroup">
+            <label *ngFor="let cat of amount_categories"
+                   class="chip"
+                   [class.chip-active]="amount_category === cat">
+              <input type="radio" [(ngModel)]="amount_category" [value]="cat" name="amount_cat" />
+              {{ cat }}
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="form-column">
+
+        <!-- Velocity Category -->
+        <div class="card slide-in" style="animation-delay:0.20s">
+          <div class="card-header">
+            <span class="card-icon">⚡</span>
+            <h2>Velocity Category</h2>
+          </div>
+          <div class="chip-group" id="velocityGroup">
+            <label *ngFor="let cat of velocity_categories"
+                   class="chip chip-velocity"
+                   [class.chip-active]="velocity_category === cat">
+              <input type="radio" [(ngModel)]="velocity_category" [value]="cat" name="velocity" />
+              {{ cat | titlecase }}
+            </label>
+          </div>
+        </div>
+
+        <!-- Age Category -->
+        <div class="card slide-in" style="animation-delay:0.25s">
+          <div class="card-header">
+            <span class="card-icon">👤</span>
+            <h2>Age Category</h2>
+          </div>
+          <div class="toggle-group" id="ageGroup">
+            <label *ngFor="let cat of age_categories"
+                   class="toggle-option"
+                   [class.toggle-active]="age_category === cat">
+              <input type="radio" [(ngModel)]="age_category" [value]="cat" name="age" />
+              <span class="toggle-icon">{{ cat === 'adult' ? '🧑' : '👴' }}</span>
+              {{ cat | titlecase }}
+            </label>
+          </div>
+        </div>
+
+        <!-- Foreign Transaction Toggle -->
+        <div class="card slide-in" style="animation-delay:0.30s">
+          <div class="card-header">
+            <span class="card-icon">🌍</span>
+            <h2>Foreign Transaction</h2>
+          </div>
+          <div class="switch-row">
+            <span class="switch-label">{{ foreign_transaction ? 'Yes — Foreign Origin' : 'No — Domestic' }}</span>
+            <label class="switch" id="foreignSwitch">
+              <input type="checkbox" [checked]="foreign_transaction === 1"
+                     (change)="foreign_transaction = ($any($event.target).checked ? 1 : 0)" />
+              <span class="switch-track">
+                <span class="switch-thumb"></span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Location Mismatch Toggle -->
+        <div class="card slide-in" style="animation-delay:0.35s">
+          <div class="card-header">
+            <span class="card-icon">📍</span>
+            <h2>Location Mismatch</h2>
+          </div>
+          <div class="switch-row">
+            <span class="switch-label">{{ location_mismatch ? 'Mismatch Detected' : 'Location Matches' }}</span>
+            <label class="switch" id="locationSwitch">
+              <input type="checkbox" [checked]="location_mismatch === 1"
+                     (change)="location_mismatch = ($any($event.target).checked ? 1 : 0)" />
+              <span class="switch-track">
+                <span class="switch-thumb"></span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Payload Preview -->
+        <div class="card payload-card slide-in" style="animation-delay:0.40s">
+          <div class="card-header">
+            <span class="card-icon">📦</span>
+            <h2>Payload Preview</h2>
+          </div>
+          <pre class="payload-code">{{ payloadPreview }}</pre>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="action-row">
+      <button class="btn-reset" (click)="resetForm()" id="resetBtn">
+        <span>↺</span> Reset
+      </button>
+      <button class="btn-analyse" (click)="submit()" [disabled]="loading" id="analyseBtn">
+        <span *ngIf="!loading">🔍 Analyse Transaction</span>
+        <span *ngIf="loading" class="spinner-text">
+          <span class="dot-spinner"></span> Analysing...
+        </span>
+      </button>
+    </div>
+
+    <!-- Result Card -->
+    <div *ngIf="submitted && (result !== null || error)" class="result-section" id="resultSection">
+
+      <!-- Error -->
+      <div *ngIf="error" class="verdict-card verdict-error" id="resultError">
+        <div class="verdict-glow verdict-glow-error"></div>
+        <div class="verdict-icon-wrap verdict-icon-wrap-error">
+          <span class="verdict-emoji">⚠️</span>
+        </div>
+        <h2 class="verdict-title verdict-title-error">Request Failed</h2>
+        <p class="verdict-desc">{{ error }}</p>
+      </div>
+
+      <!-- FRAUD -->
+      <div *ngIf="result !== null && !error && isFraud()" class="verdict-card verdict-fraud" id="resultFraud">
+        <div class="verdict-glow verdict-glow-fraud"></div>
+        <div class="pulse-ring pulse-ring-1"></div>
+        <div class="pulse-ring pulse-ring-2"></div>
+        <div class="verdict-icon-wrap verdict-icon-wrap-fraud">
+          <span class="verdict-emoji">🚨</span>
+        </div>
+        <div class="verdict-badge verdict-badge-fraud">FRAUD DETECTED</div>
+        <h2 class="verdict-title verdict-title-fraud">Transaction Flagged</h2>
+        <p class="verdict-desc">This transaction shows strong indicators of fraudulent activity. Immediate review is recommended.</p>
+        <div class="verdict-stats">
+          <div class="vstat">
+            <span class="vstat-label">Hour</span>
+            <span class="vstat-val">{{ transaction_hour }}:00</span>
+          </div>
+          <div class="vstat">
+            <span class="vstat-label">Category</span>
+            <span class="vstat-val">{{ merchant_category }}</span>
+          </div>
+          <div class="vstat">
+            <span class="vstat-label">Velocity</span>
+            <span class="vstat-val">{{ velocity_category | titlecase }}</span>
+          </div>
+          <div class="vstat">
+            <span class="vstat-label">Foreign</span>
+            <span class="vstat-val">{{ foreign_transaction ? 'Yes' : 'No' }}</span>
+          </div>
+          <div class="vstat">
+            <span class="vstat-label">Location</span>
+            <span class="vstat-val">{{ location_mismatch ? 'Mismatch' : 'OK' }}</span>
+          </div>
+          <div class="vstat">
+            <span class="vstat-label">Age Group</span>
+            <span class="vstat-val">{{ age_category | titlecase }}</span>
+          </div>
+        </div>
+        <div class="verdict-actions">
+          <button class="vbtn vbtn-danger" (click)="resetForm()" id="fraudResetBtn">↺ New Analysis</button>
+        </div>
+      </div>
+
+      <!-- SAFE -->
+      <div *ngIf="result !== null && !error && !isFraud()" class="verdict-card verdict-safe" id="resultSafe">
+        <div class="verdict-glow verdict-glow-safe"></div>
+        <div class="safe-ring safe-ring-1"></div>
+        <div class="safe-ring safe-ring-2"></div>
+        <div class="verdict-icon-wrap verdict-icon-wrap-safe">
+          <span class="verdict-emoji">✅</span>
+        </div>
+        <div class="verdict-badge verdict-badge-safe">LEGITIMATE</div>
+        <h2 class="verdict-title verdict-title-safe">Transaction Approved</h2>
+        <p class="verdict-desc">No fraud indicators detected. This transaction appears to be completely legitimate and safe to process.</p>
+        <div class="verdict-stats">
+          <div class="vstat">
+            <span class="vstat-label">Hour</span>
+            <span class="vstat-val">{{ transaction_hour }}:00</span>
+          </div>
+          <div class="vstat">
+            <span class="vstat-label">Category</span>
+            <span class="vstat-val">{{ merchant_category }}</span>
+          </div>
+          <div class="vstat">
+            <span class="vstat-label">Velocity</span>
+            <span class="vstat-val">{{ velocity_category | titlecase }}</span>
+          </div>
+          <div class="vstat">
+            <span class="vstat-label">Foreign</span>
+            <span class="vstat-val">{{ foreign_transaction ? 'Yes' : 'No' }}</span>
+          </div>
+          <div class="vstat">
+            <span class="vstat-label">Location</span>
+            <span class="vstat-val">{{ location_mismatch ? 'Mismatch' : 'OK' }}</span>
+          </div>
+          <div class="vstat">
+            <span class="vstat-label">Age Group</span>
+            <span class="vstat-val">{{ age_category | titlecase }}</span>
+          </div>
+        </div>
+        <div class="verdict-actions">
+          <button class="vbtn vbtn-safe" (click)="resetForm()" id="safeResetBtn">↺ New Analysis</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Loading overlay -->
+    <div *ngIf="loading" class="loading-overlay" id="loadingOverlay">
+      <div class="loading-ring"></div>
+      <p>Running inference…</p>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <p>FraudGuard AI &copy; 2026 &nbsp;|&nbsp; Powered by Machine Learning</p>
+  </footer>
+
+</div>
