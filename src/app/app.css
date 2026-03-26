@@ -824,3 +824,6 @@ body {
   .btn-analyse { width: 100%; justify-content: center; }
   .btn-reset   { width: 100%; justify-content: center; }
 }
+.logo-text{
+    color: rgb(184, 180, 229)
+}
